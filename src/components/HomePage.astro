@@ -1,0 +1,281 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getTranslations, type Locale } from "@i18n/translations";
+import { localizedPath } from "@i18n/routing";
+import HeroScene from "@components/HeroScene";
+
+interface Props {
+  locale: Locale;
+  posts: CollectionEntry<"blog">[];
+}
+
+const { locale, posts } = Astro.props as Props;
+const t = getTranslations(locale);
+const formatter = new Intl.DateTimeFormat(locale === "zh" ? "zh-TW" : "en-US", {
+  dateStyle: "medium",
+});
+---
+
+<!-- ═══════ HERO — SPLIT LAYOUT ═══════ -->
+<section
+  class="mb-20 bg-[#0f1117] rounded-xl overflow-hidden shadow-lg border border-white/5 mx-0 lg:mx-0"
+>
+  <div class="grid min-h-[520px] lg:grid-cols-2">
+    <!-- Left: text content -->
+    <div
+      class="flex flex-col justify-center px-6 py-12 sm:px-10 sm:py-16 lg:px-14 lg:py-20 z-10"
+    >
+      <p
+        class="text-[0.65rem] font-semibold uppercase text-[var(--color-gold)]"
+      >
+        {t.hero.eyebrow}
+      </p>
+      <h1
+        class="mt-4 max-w-lg font-display text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
+      >
+        {t.hero.title}
+      </h1>
+      <p class="mt-5 max-w-md text-sm text-white/60 sm:text-base">
+        {t.hero.body}
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a
+          href={localizedPath(locale, "/blog")}
+          class="group inline-flex items-center gap-2 rounded-[10px] bg-[var(--color-gold)] px-6 py-3 text-sm font-semibold text-white transition-all hover:brightness-110 shadow-md shadow-gold/20"
+        >
+          {t.hero.primary}
+          <span class="transition-transform group-hover:translate-x-1">→</span>
+        </a>
+        <a
+          href="https://levelup.land"
+          target="_blank"
+          rel="noreferrer"
+          class="inline-flex items-center rounded-[10px] border border-white/20 px-6 py-3 text-sm font-semibold text-white transition-all hover:border-white/50 hover:bg-white/5"
+        >
+          {t.hero.secondary}
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: Three.js scene (Mobile & Desktop) -->
+    <div
+      class="relative -mt-10 min-h-[350px] w-full lg:mt-0 lg:min-h-[400px] lg:border-l lg:border-white/10"
+    >
+      <!-- Gradient fade into the 3D scene from the text side on desktop -->
+      <div
+        class="absolute inset-y-0 left-0 z-10 hidden w-24 pointer-events-none bg-gradient-to-r from-[#0f1117] to-transparent lg:block"
+      >
+      </div>
+      <!-- Gradient fade on mobile -->
+      <div
+        class="absolute inset-x-0 top-0 z-10 h-24 pointer-events-none bg-gradient-to-b from-[#0f1117] to-transparent lg:hidden"
+      >
+      </div>
+
+      <HeroScene client:load />
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FEATURES ═══════ -->
+<section class="mb-24">
+  <div class="mb-12 text-center">
+    <h2 class="font-display text-2xl font-bold text-foreground sm:text-3xl">
+      {t.intro.title}
+    </h2>
+    <p class="mt-4 mx-auto max-w-2xl text-base text-muted-foreground">
+      {t.intro.body}
+    </p>
+  </div>
+
+  <!-- Feature pillars -->
+  <div class="mt-14 grid gap-4 md:grid-cols-3">
+    {
+      t.features.map((feature: { title: string; body: string }, i: number) => (
+        <div class="flex flex-col items-start rounded-xl bg-card p-8 shadow-sm ring-1 ring-[var(--color-border)] transition-shadow hover:shadow-md">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-gold)]/10 text-gold">
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d={
+                  i === 0
+                    ? "M13 10V3L4 14h7v7l9-11h-7z"
+                    : i === 1
+                      ? "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      : "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                }
+              />
+            </svg>
+          </div>
+          <h3 class="mt-5 text-base font-bold text-foreground">
+            {feature.title}
+          </h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {feature.body}
+          </p>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<!-- ═══════ DNA / BRAND BLOCK ═══════ -->
+<section
+  class="mb-20 mx-0 rounded-xl bg-[#0f1117] border border-white/5 shadow-lg px-6 lg:px-10 py-16 lg:py-20"
+>
+  <div class="mx-auto max-w-5xl">
+    <p class="text-[0.65rem] font-semibold uppercase text-white/40">
+      {t.dna.eyebrow}
+    </p>
+    <h2
+      class="mt-4 max-w-2xl font-display text-3xl font-bold text-white sm:text-4xl"
+    >
+      {t.dna.title}
+    </h2>
+    <div class="mt-2 h-0.5 w-12 bg-[var(--color-gold)]"></div>
+    <p class="mt-6 max-w-2xl text-base text-white/60">{t.dna.body}</p>
+    <ul class="mt-8 flex flex-wrap gap-6">
+      {
+        t.dna.bullets.map((bullet: string) => (
+          <li class="flex items-center gap-2 text-sm text-white/80">
+            <span class="h-1.5 w-1.5 rounded-full bg-[var(--color-gold)]" />
+            {bullet}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════ SAAS DATA & CHANGELOG ═══════ -->
+<section class="mb-20 grid gap-10 lg:grid-cols-2">
+  <!-- Left: Changelog -->
+  <div>
+    <div
+      class="mb-6 flex items-end justify-between border-b border-[var(--color-border)] pb-4"
+    >
+      <h2 class="font-display text-2xl font-bold text-foreground">
+        {t.posts.title}
+      </h2>
+      <a
+        href={localizedPath(locale, "/changelog")}
+        class="text-sm font-medium text-gold transition-colors hover:text-gold/80"
+      >
+        View All →
+      </a>
+    </div>
+
+    {
+      posts.length === 0 ? (
+        <p class="mt-8 text-center text-sm text-muted-foreground">
+          {t.posts.empty}
+        </p>
+      ) : (
+        <div class="mt-6 flex flex-col gap-4">
+          {posts.map((post) => (
+            <a
+              href={localizedPath(locale, `/blog/${post.slug}`)}
+              class="group flex flex-col items-start gap-3 rounded-xl bg-card p-6 shadow-sm ring-1 ring-[var(--color-border)] transition-all hover:shadow-md hover:ring-gold/30"
+            >
+              <div class="flex w-full items-center justify-between">
+                <span class="inline-flex items-center rounded-md bg-gold/10 px-2 py-1 text-[0.65rem] font-semibold uppercase text-gold">
+                  Update
+                </span>
+                <time class="text-xs text-muted-foreground">
+                  {formatter.format(post.data.publishDate)}
+                </time>
+              </div>
+              <div>
+                <h3 class="font-display text-lg font-bold text-foreground group-hover:text-gold transition-colors">
+                  {post.data.title}
+                </h3>
+                <p class="mt-2 text-sm text-muted-foreground line-clamp-2">
+                  {post.data.description}
+                </p>
+              </div>
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </div>
+
+  <!-- Right: Roadmap Sneak Peek -->
+  <div>
+    <div
+      class="mb-6 flex items-end justify-between border-b border-[var(--color-border)] pb-4"
+    >
+      <h2 class="font-display text-2xl font-bold text-foreground">
+        {t.nav.roadmap || "Roadmap"}
+      </h2>
+      <a
+        href={localizedPath(locale, "/roadmap")}
+        class="text-sm font-medium text-gold transition-colors hover:text-gold/80"
+      >
+        View All →
+      </a>
+    </div>
+
+    <div class="mt-6 flex flex-col gap-4">
+      <!-- In Progress Card -->
+      <div
+        class="flex flex-col items-start gap-4 rounded-xl border border-[var(--color-gold)] bg-gold/5 p-6 shadow-sm"
+      >
+        <div class="flex items-center gap-2">
+          <span class="relative flex h-2.5 w-2.5">
+            <span
+              class="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold opacity-75"
+            ></span>
+            <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-gold"
+            ></span>
+          </span>
+          <span class="text-xs font-semibold uppercase text-gold"
+            >In Progress</span
+          >
+        </div>
+        <div>
+          <h3 class="font-display text-lg font-bold text-foreground">
+            Advanced Analytics Dashboard
+          </h3>
+          <p class="mt-2 text-sm text-muted-foreground">
+            Deep dive into contributor metrics, quest completion rates, and
+            token distribution velocity.
+          </p>
+        </div>
+        <div class="h-1.5 w-full overflow-hidden rounded-full bg-black/10">
+          <div class="h-full w-[65%] rounded-full bg-gold"></div>
+        </div>
+      </div>
+
+      <!-- Planned Card -->
+      <div
+        class="flex flex-col items-start gap-4 rounded-xl bg-card p-6 shadow-sm ring-1 ring-[var(--color-border)]"
+      >
+        <div class="flex items-center gap-2">
+          <span
+            class="h-2.5 w-2.5 rounded-full border-2 border-muted-foreground"
+          ></span>
+          <span class="text-xs font-semibold uppercase text-muted-foreground"
+            >Planned • Q3</span
+          >
+        </div>
+        <div>
+          <h3 class="font-display text-lg font-bold text-foreground">
+            Custom Integration Webhooks
+          </h3>
+          <p class="mt-2 text-sm text-muted-foreground">
+            Connect LevelUp events to your existing Discord, Slack, and internal
+            tooling infrastructure.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,305 @@
+---
+import "../styles/base.css";
+import Logo from "@components/Logo.astro";
+import LanguageSwitcher from "@components/LanguageSwitcher";
+import { getTranslations, locales, type Locale } from "@i18n/translations";
+import { localizedPath } from "@i18n/routing";
+
+interface Props {
+  title?: string;
+  description?: string;
+  locale: Locale;
+  path?: string;
+}
+
+const { title, description, locale, path = "/" } = Astro.props as Props;
+const t = getTranslations(locale);
+const pageTitle = title ?? t.meta.title;
+const pageDescription = description ?? t.meta.description;
+const switcherOptions = locales.map((code) => ({
+  locale: code,
+  label: getTranslations(code).langName,
+  href: localizedPath(code as Locale, path),
+}));
+---
+
+<html lang={locale} class="bg-background text-foreground">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="icon" type="image/svg+xml" href="/favico.svg" />
+  </head>
+  <body class="min-h-screen bg-background">
+    <!-- Navigation -->
+    <header
+      class="sticky top-0 z-50 border-b border-[var(--color-border)] bg-background/90 backdrop-blur-md"
+    >
+      <div
+        class="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10"
+      >
+        <!-- Left: Logo & Main Nav -->
+        <div class="flex items-center gap-10">
+          <Logo />
+
+          <nav class="hidden items-center gap-6 md:flex">
+            <a
+              class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              href={localizedPath(locale, "/")}
+            >
+              {t.nav.home}
+            </a>
+            <a
+              class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              href={localizedPath(locale, "/blog")}
+            >
+              {t.nav.blog}
+            </a>
+            <a
+              class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              href={localizedPath(locale, "/changelog")}
+            >
+              {t.nav.changelog}
+            </a>
+            <a
+              class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              href={localizedPath(locale, "/roadmap")}
+            >
+              {t.nav.roadmap}
+            </a>
+          </nav>
+        </div>
+
+        <!-- Right: Actions + Language -->
+        <div class="flex items-center gap-5">
+          <LanguageSwitcher
+            client:load
+            options={switcherOptions}
+            current={locale}
+            label=""
+          />
+          <div class="hidden items-center gap-5 md:flex">
+            <span class="h-4 w-px bg-[var(--color-border)]"></span>
+            <a
+              class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              href="https://docs.levelup.land"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t.nav.docs}
+            </a>
+            <a
+              class="rounded-lg bg-[var(--color-gold)] px-4 py-2 text-sm font-semibold text-white transition-all hover:brightness-110"
+              href="https://levelup.land"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t.nav.platform}
+            </a>
+          </div>
+          <!-- Mobile Menu Toggle -->
+          <button
+            id="mobile-menu-btn"
+            class="flex items-center p-2 text-foreground md:hidden"
+            aria-label="Toggle Menu"
+          >
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Dropdown -->
+      <div
+        id="mobile-menu"
+        class="absolute inset-x-0 top-full hidden border-b border-[var(--color-border)] bg-background/95 backdrop-blur-md shadow-2xl md:hidden"
+      >
+        <nav class="flex flex-col space-y-4 px-6 py-6">
+          <a
+            class="text-base font-medium text-foreground transition-colors"
+            href={localizedPath(locale, "/")}>{t.nav.home}</a
+          >
+          <a
+            class="text-base font-medium text-foreground transition-colors"
+            href={localizedPath(locale, "/blog")}>{t.nav.blog}</a
+          >
+          <a
+            class="text-base font-medium text-foreground transition-colors"
+            href={localizedPath(locale, "/changelog")}>{t.nav.changelog}</a
+          >
+          <a
+            class="text-base font-medium text-foreground transition-colors"
+            href={localizedPath(locale, "/roadmap")}>{t.nav.roadmap}</a
+          >
+
+          <div class="my-2 h-px w-full bg-[var(--color-border)]"></div>
+
+          <a
+            class="text-base font-medium text-muted-foreground transition-colors"
+            href="https://docs.levelup.land"
+            target="_blank"
+            rel="noreferrer">{t.nav.docs}</a
+          >
+          <a
+            class="inline-flex w-full items-center justify-center rounded-lg bg-[var(--color-gold)] px-4 py-3 text-sm font-semibold text-white transition-all"
+            href="https://levelup.land"
+            target="_blank"
+            rel="noreferrer">{t.nav.platform}</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <script is:inline>
+      const btn = document.getElementById("mobile-menu-btn");
+      const menu = document.getElementById("mobile-menu");
+      if (btn && menu) {
+        btn.addEventListener("click", () => {
+          menu.classList.toggle("hidden");
+        });
+      }
+    </script>
+
+    <!-- Main Content -->
+    <main class="mx-auto max-w-7xl px-6 py-12 lg:px-10 lg:py-16">
+      <slot />
+    </main>
+
+    <!-- SaaS Footer -->
+    <footer
+      class="border-t border-[var(--color-border)] bg-[#0f1117] text-white/60"
+    >
+      <div class="mx-auto max-w-7xl px-6 py-16 lg:px-10">
+        <div class="grid gap-12 md:grid-cols-[2fr_1fr_1fr_1fr]">
+          <!-- Brand -->
+          <div class="flex flex-col items-start pr-8">
+            <div
+              class="flex items-center gap-2 font-display text-lg font-bold text-white"
+            >
+              <img
+                src="/logo-text-black.svg"
+                style="height:24px"
+                alt="Levelup"
+                class="brightness-0 invert"
+              />
+            </div>
+            <p class="mt-4 text-sm leading-relaxed text-white/50">
+              {t.footer.tagline}
+            </p>
+          </div>
+
+          <!-- Platform -->
+          <div>
+            <h3 class="text-sm font-semibold text-white">
+              {t.nav.platform}
+            </h3>
+            <ul class="mt-4 space-y-3 text-sm">
+              <li>
+                <a
+                  href="https://levelup.land"
+                  class="transition-colors hover:text-white"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {t.footer.visitPlatform}
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://docs.levelup.land"
+                  class="transition-colors hover:text-white"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {t.nav.docs}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Resources -->
+          <div>
+            <h3 class="text-sm font-semibold text-white">
+              {t.footer.contentLabel}
+            </h3>
+            <ul class="mt-4 space-y-3 text-sm">
+              <li>
+                <a
+                  href={localizedPath(locale, "/blog")}
+                  class="transition-colors hover:text-white"
+                >
+                  {t.nav.blog}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={localizedPath(locale, "/changelog")}
+                  class="transition-colors hover:text-white"
+                >
+                  {t.nav.changelog}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={localizedPath(locale, "/roadmap")}
+                  class="transition-colors hover:text-white"
+                >
+                  {t.nav.roadmap}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Social -->
+          <div>
+            <h3 class="text-sm font-semibold text-white">
+              {t.footer.socialLabel}
+            </h3>
+            <ul class="mt-4 space-y-3 text-sm">
+              <li>
+                <a
+                  href="https://x.com/levelup"
+                  class="transition-colors hover:text-white"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  X (Twitter)
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://t.me/levelup"
+                  class="transition-colors hover:text-white"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Telegram
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div
+          class="mt-16 flex flex-col items-center justify-between border-t border-white/10 pt-8 text-xs text-white/40 sm:flex-row"
+        >
+          <p>
+            © {new Date().getFullYear()} LevelUp Platform. {t.footer.rights}
+          </p>
+          <p class="mt-4 sm:mt-0">{t.footer.crafted}</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

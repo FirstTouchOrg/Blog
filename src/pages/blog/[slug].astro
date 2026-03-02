@@ -1,0 +1,85 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import type { Locale } from "@i18n/translations";
+import { getTranslations } from "@i18n/translations";
+import { localizedPath } from "@i18n/routing";
+import { getCollection } from "astro:content";
+
+const locale: Locale = "en";
+const t = getTranslations(locale);
+
+export async function getStaticPaths() {
+  const posts = await getCollection(
+    "blog",
+    (entry) => entry.data.lang === "en",
+  );
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+const formatter = new Intl.DateTimeFormat("en-US", { dateStyle: "long" });
+---
+
+<BaseLayout
+  locale={locale}
+  title={`${post.data.title} | LevelUp Platform`}
+  description={post.data.description}
+  path={`/blog/${post.slug}`}
+>
+  <article class="mx-auto max-w-2xl">
+    <!-- Back link -->
+    <a
+      href={localizedPath(locale, "/blog")}
+      class="link-magazine mb-10 inline-flex items-center gap-2 text-xs font-semibold uppercase text-muted-foreground transition-colors hover:text-foreground"
+    >
+      <span>←</span>
+      {t.nav.blog}
+    </a>
+
+    <!-- Article header -->
+    <header class="mb-12 text-center">
+      <div
+        class="flex items-center justify-center gap-3 text-[0.6rem] font-semibold uppercase text-muted-foreground"
+      >
+        <time>{formatter.format(post.data.publishDate)}</time>
+        {
+          post.data.tags.length > 0 && (
+            <>
+              <span class="h-0.5 w-0.5 rounded-full bg-muted-foreground" />
+              {post.data.tags.map((tag) => (
+                <span>{tag}</span>
+              ))}
+            </>
+          )
+        }
+      </div>
+      <h1
+        class="mt-5 font-display text-4xl font-bold sm:text-5xl"
+      >
+        {post.data.title}
+      </h1>
+      <div class="mx-auto mt-6 h-0.5 w-12 bg-[var(--color-gold)]"></div>
+    </header>
+
+    <!-- Article body -->
+    <div
+      class="prose prose-lg prose-magazine max-w-none prose-headings:font-display prose-a:text-gold"
+    >
+      <Content />
+    </div>
+
+    <!-- Back to stories -->
+    <div class="mt-16 border-t border-[var(--color-border)] pt-8 text-center">
+      <a
+        href={localizedPath(locale, "/blog")}
+        class="link-magazine text-xs font-semibold uppercase text-muted-foreground transition-colors hover:text-foreground"
+      >
+        ← {t.posts.backToStories}
+      </a>
+    </div>
+  </article>
+</BaseLayout>

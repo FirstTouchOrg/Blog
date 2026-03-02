@@ -1,0 +1,13 @@
+---
+const { compact = false } = Astro.props;
+---
+
+<a
+  href="/"
+  class:list={[
+    "inline-flex items-center font-display text-lg font-semibold tracking-tight text-foreground",
+    compact && "text-base",
+  ]}
+>
+  <img src="/logo-text-black.svg" style="height:28px" alt="Levelup" />
+</a>
