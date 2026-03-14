@@ -8,15 +8,21 @@ const locale: Locale = 'en';
 <BaseLayout
   locale={locale}
   path="/growth-tools/quest-channel-link-builder"
-  title="Quest 渠道链接构造器 | Growth Tools"
+  title="Quest 渠道链接构造器 | 增长工具"
 >
   <section class="mx-auto max-w-3xl space-y-8">
     <header class="space-y-3">
       <h1 class="text-3xl font-bold tracking-tight">Quest 渠道链接构造器</h1>
       <p class="text-sm text-muted-foreground">
-        生成规则：<code>invitecode</code> 和 <code>ref</code> 必须固定在前面；
-        <code>invitecode</code> 自动大写，其余参数自动小写并将空格替换为 <code>_</code>。
+        快速生成用于渠道追踪的 Quest 链接。通过 UTM 参数，你可以区分不同渠道来源、传播方式和活动素材，便于后续统计转化效果。
       </p>
+      <button
+        id="open-rules"
+        type="button"
+        class="inline-flex rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm font-semibold hover:border-[var(--color-gold)]"
+      >
+        查看详细规则
+      </button>
     </header>
 
     <form id="builder-form" class="space-y-6 rounded-xl border border-[var(--color-border)] bg-card p-6">
@@ -25,9 +31,8 @@ const locale: Locale = 'en';
         <input
           id="baseUrl"
           name="baseUrl"
-          type="url"
-          required
-          placeholder="https://levelup.land/quest/ANOME-ONE-x9I7n"
+          type="text"
+          placeholder="quest page url"
           class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none ring-0 focus:border-[var(--color-gold)]"
         />
         <div class="flex flex-wrap items-center gap-2 text-xs">
@@ -44,19 +49,20 @@ const locale: Locale = 'en';
 
       <div class="grid gap-4 sm:grid-cols-2">
         <div class="space-y-2">
-          <label for="invitecode" class="text-sm font-semibold">invitecode *</label>
-          <input id="invitecode" name="invitecode" required placeholder="ABC123" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]" />
+          <label for="invitecode" class="text-sm font-semibold">invitecode</label>
+          <input id="invitecode" name="invitecode" placeholder="ABC123" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]" />
         </div>
         <div class="space-y-2">
-          <label for="ref" class="text-sm font-semibold">ref *</label>
-          <input id="ref" name="ref" required placeholder="vn / anome / kol_alice" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]" />
+          <label for="ref" class="text-sm font-semibold">ref</label>
+          <input id="ref" name="ref" placeholder="your_name_vn" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]" />
         </div>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2">
         <div class="space-y-2">
-          <label for="utmSource" class="text-sm font-semibold">utm_source *</label>
-          <select id="utmSource" name="utmSource" required class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]">
+          <label for="utmSource" class="text-sm font-semibold">utm_source</label>
+          <select id="utmSource" name="utmSource" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]">
+            <option value="">未选择</option>
             <option value="telegram">telegram</option>
             <option value="twitter">twitter</option>
             <option value="discord">discord</option>
@@ -64,20 +70,27 @@ const locale: Locale = 'en';
             <option value="zalo">zalo</option>
             <option value="other">other</option>
           </select>
+          <input id="utmSourceOther" name="utmSourceOther" placeholder="custom source" class="hidden w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]" />
         </div>
         <div class="space-y-2">
-          <label for="utmMedium" class="text-sm font-semibold">utm_medium（自动推断）</label>
-          <input id="utmMedium" name="utmMedium" readonly class="w-full rounded-lg border border-[var(--color-border)] bg-muted px-3 py-2 text-sm" />
+          <label for="utmMedium" class="text-sm font-semibold">utm_medium</label>
+          <select id="utmMedium" name="utmMedium" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]">
+            <option value="">未选择</option>
+            <option value="community">community</option>
+            <option value="social">social</option>
+            <option value="other">other</option>
+          </select>
+          <input id="utmMediumOther" name="utmMediumOther" placeholder="custom medium" class="hidden w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]" />
         </div>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2">
         <div class="space-y-2">
-          <label for="utmCampaign" class="text-sm font-semibold">utm_campaign（可选）</label>
+          <label for="utmCampaign" class="text-sm font-semibold">utm_campaign</label>
           <input id="utmCampaign" name="utmCampaign" placeholder="vn_recharge_0313" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]" />
         </div>
         <div class="space-y-2">
-          <label for="utmContent" class="text-sm font-semibold">utm_content（可选）</label>
+          <label for="utmContent" class="text-sm font-semibold">utm_content</label>
           <input id="utmContent" name="utmContent" placeholder="banner_v1" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]" />
         </div>
       </div>
@@ -105,6 +118,31 @@ const locale: Locale = 'en';
     </section>
   </section>
 
+  <dialog id="rules-modal" class="w-full max-w-2xl rounded-xl border border-[var(--color-border)] bg-card p-0 backdrop:bg-black/40">
+    <div class="space-y-4 p-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold">参数定义与规则</h3>
+        <button id="close-rules" type="button" class="rounded-md border border-[var(--color-border)] px-2 py-1 text-xs">关闭</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-left text-sm">
+          <thead class="text-muted-foreground">
+            <tr><th class="py-2 pr-4">参数</th><th class="py-2 pr-4">说明</th><th class="py-2 pr-4">示例</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="py-1 pr-4 font-mono">invitecode</td><td class="py-1 pr-4">团队或个人邀请码（自动大写）</td><td class="py-1 pr-4 font-mono">ABC123</td></tr>
+            <tr><td class="py-1 pr-4 font-mono">ref</td><td class="py-1 pr-4">来源缩写标识</td><td class="py-1 pr-4 font-mono">vn_tank</td></tr>
+            <tr><td class="py-1 pr-4 font-mono">utm_source</td><td class="py-1 pr-4">流量平台来源</td><td class="py-1 pr-4 font-mono">telegram</td></tr>
+            <tr><td class="py-1 pr-4 font-mono">utm_medium</td><td class="py-1 pr-4">传播媒介，可自动联动也可手动切换</td><td class="py-1 pr-4 font-mono">community</td></tr>
+            <tr><td class="py-1 pr-4 font-mono">utm_campaign</td><td class="py-1 pr-4">活动标识（用于区分活动）</td><td class="py-1 pr-4 font-mono">vn_recharge_0313</td></tr>
+            <tr><td class="py-1 pr-4 font-mono">utm_content</td><td class="py-1 pr-4">素材标识（用于区分素材）</td><td class="py-1 pr-4 font-mono">banner_v1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs text-muted-foreground">格式规范：除 invitecode 外，参数统一小写并将空格替换为下划线；链接拼接时优先按 invitecode、ref、utm_source、utm_medium 的顺序输出，后接 campaign/content。</p>
+    </div>
+  </dialog>
+
   <script is:inline>
     const mediumMap = {
       telegram: 'community',
@@ -117,27 +155,61 @@ const locale: Locale = 'en';
 
     const form = document.getElementById('builder-form');
     const sourceEl = document.getElementById('utmSource');
+    const sourceOtherEl = document.getElementById('utmSourceOther');
     const mediumEl = document.getElementById('utmMedium');
+    const mediumOtherEl = document.getElementById('utmMediumOther');
     const resultEl = document.getElementById('result');
     const tableEl = document.getElementById('param-table');
     const copyBtn = document.getElementById('copy-btn');
     const baseUrlEl = document.getElementById('baseUrl');
 
+    const openRulesBtn = document.getElementById('open-rules');
+    const closeRulesBtn = document.getElementById('close-rules');
+    const rulesModal = document.getElementById('rules-modal');
+
     const normalizeLower = (v) => v.trim().toLowerCase().replace(/\s+/g, '_');
     const normalizeUpper = (v) => normalizeLower(v).toUpperCase();
 
-    const updateMedium = () => {
-      const value = sourceEl.value || 'other';
-      mediumEl.value = mediumMap[value] || 'social';
+    const updateSourceOther = () => {
+      sourceOtherEl.classList.toggle('hidden', sourceEl.value !== 'other');
     };
 
-    updateMedium();
-    sourceEl.addEventListener('change', updateMedium);
+    const updateMediumOther = () => {
+      mediumOtherEl.classList.toggle('hidden', mediumEl.value !== 'other');
+    };
+
+    const syncMediumFromSource = () => {
+      const sourceValue = sourceEl.value;
+      if (!sourceValue) {
+        mediumEl.value = '';
+      } else {
+        mediumEl.value = mediumMap[sourceValue] || 'social';
+      }
+      updateMediumOther();
+    };
+
+    sourceEl.addEventListener('change', () => {
+      updateSourceOther();
+      syncMediumFromSource();
+    });
+    mediumEl.addEventListener('change', updateMediumOther);
+
+    updateSourceOther();
+    updateMediumOther();
+    syncMediumFromSource();
 
     document.querySelectorAll('[data-fill-base]').forEach((btn) => {
       btn.addEventListener('click', () => {
         baseUrlEl.value = btn.getAttribute('data-fill-base') || '';
       });
+    });
+
+    openRulesBtn?.addEventListener('click', () => rulesModal?.showModal());
+    closeRulesBtn?.addEventListener('click', () => rulesModal?.close());
+    rulesModal?.addEventListener('click', (e) => {
+      const rect = rulesModal.getBoundingClientRect();
+      const inDialog = rect.top <= e.clientY && e.clientY <= rect.top + rect.height && rect.left <= e.clientX && e.clientX <= rect.left + rect.width;
+      if (!inDialog) rulesModal.close();
     });
 
     let latestLink = '';
@@ -147,31 +219,41 @@ const locale: Locale = 'en';
 
       const fd = new FormData(form);
       const baseUrl = String(fd.get('baseUrl') || '').trim();
-      const invitecode = normalizeUpper(String(fd.get('invitecode') || ''));
-      const ref = normalizeLower(String(fd.get('ref') || ''));
-      const utmSource = normalizeLower(String(fd.get('utmSource') || ''));
-      const utmMedium = normalizeLower(String(mediumEl.value || 'social'));
+      const inviteRaw = String(fd.get('invitecode') || '');
+      const refRaw = String(fd.get('ref') || '');
+
+      const sourceSelect = String(fd.get('utmSource') || '');
+      const sourceOtherRaw = String(fd.get('utmSourceOther') || '');
+      const mediumSelect = String(fd.get('utmMedium') || '');
+      const mediumOtherRaw = String(fd.get('utmMediumOther') || '');
+
+      const invitecode = inviteRaw ? normalizeUpper(inviteRaw) : '';
+      const ref = refRaw ? normalizeLower(refRaw) : '';
+      const utmSource = sourceSelect === 'other' ? normalizeLower(sourceOtherRaw) : normalizeLower(sourceSelect || '');
+      const utmMedium = mediumSelect === 'other' ? normalizeLower(mediumOtherRaw) : normalizeLower(mediumSelect || '');
+
       const utmCampaignRaw = String(fd.get('utmCampaign') || '').trim();
       const utmContentRaw = String(fd.get('utmContent') || '').trim();
       const utmCampaign = utmCampaignRaw ? normalizeLower(utmCampaignRaw) : '';
       const utmContent = utmContentRaw ? normalizeLower(utmContentRaw) : '';
 
       const params = new URLSearchParams();
-      params.append('invitecode', invitecode);
-      params.append('ref', ref);
-      params.append('utm_source', utmSource);
-      params.append('utm_medium', utmMedium);
+      if (invitecode) params.append('invitecode', invitecode);
+      if (ref) params.append('ref', ref);
+      if (utmSource) params.append('utm_source', utmSource);
+      if (utmMedium) params.append('utm_medium', utmMedium);
       if (utmCampaign) params.append('utm_campaign', utmCampaign);
       if (utmContent) params.append('utm_content', utmContent);
 
-      latestLink = `${baseUrl}?${params.toString()}`;
-      resultEl.textContent = latestLink;
+      const query = params.toString();
+      latestLink = baseUrl ? (query ? `${baseUrl}?${query}` : baseUrl) : (query ? `?${query}` : '');
+      resultEl.textContent = latestLink || '（暂无可生成内容）';
 
       const rows = [
-        ['invitecode', invitecode],
-        ['ref', ref],
-        ['utm_source', utmSource],
-        ['utm_medium', utmMedium],
+        ['invitecode', invitecode || '—'],
+        ['ref', ref || '—'],
+        ['utm_source', utmSource || '—'],
+        ['utm_medium', utmMedium || '—'],
         ['utm_campaign', utmCampaign || '—'],
         ['utm_content', utmContent || '—']
       ];
