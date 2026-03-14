@@ -120,11 +120,11 @@ const locale: Locale = 'zh';
     </section>
   </section>
 
-  <dialog id="rules-modal" class="w-full max-w-2xl rounded-xl border border-[var(--color-border)] bg-card p-0 backdrop:bg-black/40">
+  <dialog id="rules-modal" class="w-[calc(100%-2rem)] max-w-2xl rounded-xl border border-[var(--color-border)] bg-card p-0 backdrop:bg-black/40">
     <div class="space-y-4 p-6">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-semibold">参数定义与规则</h3>
-        <button id="close-rules" type="button" class="rounded-md border border-[var(--color-border)] px-2 py-1 text-xs">关闭</button>
+        <button id="close-rules" type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--color-border)] text-lg leading-none" aria-label="关闭弹窗">×</button>
       </div>
       <div class="overflow-x-auto">
         <table class="min-w-full text-left text-sm">
