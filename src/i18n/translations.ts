@@ -61,7 +61,8 @@ const translations = {
       rights: 'All rights reserved.',
       visitPlatform: 'Visit Platform',
       contentLabel: 'Content',
-      socialLabel: 'Connect'
+      socialLabel: 'Connect',
+      utmBuilder: 'UTM URL Builder'
     },
     languageSwitcher: 'Lang'
   },
@@ -122,7 +123,8 @@ const translations = {
       rights: '保留所有权利。',
       visitPlatform: '访问平台',
       contentLabel: '内容',
-      socialLabel: '社交'
+      socialLabel: '社交',
+      utmBuilder: 'UTM 链接构造器'
     },
     languageSwitcher: '语言'
   }

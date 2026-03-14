@@ -2,26 +2,26 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import type { Locale } from '@i18n/translations';
 
-const locale: Locale = 'zh';
+const locale: Locale = 'en';
 ---
 
 <BaseLayout
   locale={locale}
-  path="/growth-tools/quest-channel-link-builder"
-  title="Quest 渠道链接构造器 | 增长工具"
+  path="/growth-tools/utm-url-builder"
+  title="Quest Channel Link Builder | Growth Tools"
 >
   <section class="mx-auto max-w-3xl space-y-8">
     <header class="space-y-3">
-      <h1 class="text-3xl font-bold tracking-tight">Quest 渠道链接构造器</h1>
+      <h1 class="text-3xl font-bold tracking-tight">Quest Channel Link Builder</h1>
       <p class="text-sm text-muted-foreground">
-        快速生成用于渠道追踪的 Quest 链接。通过 UTM 参数，你可以区分不同渠道来源、传播方式和活动素材，便于后续统计转化效果。
+        Quickly generate Quest tracking links for channels. UTM parameters help you distinguish traffic sources, distribution mediums, and campaign creatives for cleaner attribution.
       </p>
       <button
         id="open-rules"
         type="button"
         class="inline-flex rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm font-semibold hover:border-[var(--color-gold)]"
       >
-        查看详细规则
+        View detailed parameter guide
       </button>
     </header>
 
@@ -36,7 +36,7 @@ const locale: Locale = 'zh';
           class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none ring-0 focus:border-[var(--color-gold)]"
         />
         <div class="flex flex-wrap items-center gap-2 text-xs">
-          <span class="text-muted-foreground">推荐：</span>
+          <span class="text-muted-foreground">Suggested:</span>
           <button
             type="button"
             data-fill-base="https://levelup.land/quest/ANOME-ONE-x9I7n"
@@ -62,7 +62,7 @@ const locale: Locale = 'zh';
         <div class="space-y-2">
           <label for="utmSource" class="text-sm font-semibold">utm_source</label>
           <select id="utmSource" name="utmSource" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]">
-            <option value="">未选择</option>
+            <option value="">Not selected</option>
             <option value="telegram">telegram</option>
             <option value="twitter">twitter</option>
             <option value="discord">discord</option>
@@ -75,7 +75,7 @@ const locale: Locale = 'zh';
         <div class="space-y-2">
           <label for="utmMedium" class="text-sm font-semibold">utm_medium</label>
           <select id="utmMedium" name="utmMedium" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]">
-            <option value="">未选择</option>
+            <option value="">Not selected</option>
             <option value="community">community</option>
             <option value="social">social</option>
             <option value="other">other</option>
@@ -96,22 +96,22 @@ const locale: Locale = 'zh';
       </div>
 
       <div class="flex flex-wrap gap-3">
-        <button type="submit" class="rounded-lg bg-[var(--color-gold)] px-4 py-2 text-sm font-semibold text-white hover:brightness-110">生成链接</button>
+        <button type="submit" class="rounded-lg bg-[var(--color-gold)] px-4 py-2 text-sm font-semibold text-white hover:brightness-110">Generate link</button>
       </div>
     </form>
 
     <section class="space-y-4 rounded-xl border border-[var(--color-border)] bg-card p-6">
       <div class="flex items-center justify-between gap-3">
-        <h2 class="text-xl font-semibold">生成结果</h2>
-        <button id="copy-btn" type="button" class="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm font-semibold hover:border-[var(--color-gold)]">复制链接</button>
+        <h2 class="text-xl font-semibold">Generated result</h2>
+        <button id="copy-btn" type="button" class="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm font-semibold hover:border-[var(--color-gold)]">Copy link</button>
       </div>
-      <pre id="result" class="overflow-x-auto rounded-lg bg-background p-4 text-sm">（点击“生成链接”后显示）</pre>
+      <pre id="result" class="overflow-x-auto rounded-lg bg-background p-4 text-sm">（点击“Generate link”后显示）</pre>
       <div class="overflow-x-auto">
         <table class="min-w-full text-left text-sm">
           <thead class="text-muted-foreground">
             <tr>
-              <th class="py-2 pr-4">参数</th>
-              <th class="py-2 pr-4">值</th>
+              <th class="py-2 pr-4">Parameter</th>
+              <th class="py-2 pr-4">Value</th>
             </tr>
           </thead>
           <tbody id="param-table"></tbody>
@@ -123,21 +123,21 @@ const locale: Locale = 'zh';
   <dialog id="rules-modal" class="w-[calc(100%-2rem)] max-w-4xl rounded-xl border border-[var(--color-border)] bg-card p-0 backdrop:bg-black/40">
     <div class="space-y-4 p-6">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold">参数定义与规则</h3>
-        <button id="close-rules" type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--color-border)] text-lg leading-none" aria-label="关闭弹窗">×</button>
+        <h3 class="text-lg font-semibold">Parameter definitions</h3>
+        <button id="close-rules" type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--color-border)] text-lg leading-none" aria-label="Close modal">×</button>
       </div>
       <div class="overflow-x-auto">
         <table class="w-max min-w-[560px] text-left text-sm md:min-w-full">
           <thead class="text-muted-foreground">
-            <tr><th class="py-2 pr-4">参数</th><th class="py-2 pr-4">说明</th><th class="py-2 pr-4">示例</th></tr>
+            <tr><th class="py-2 pr-4">Parameter</th><th class="py-2 pr-4">Definition</th><th class="py-2 pr-4">Example</th></tr>
           </thead>
           <tbody>
-            <tr><td class="py-1 pr-4 font-mono">invitecode</td><td class="py-1 pr-4">团队或个人邀请码（自动大写）</td><td class="py-1 pr-4 font-mono">ABC123</td></tr>
-            <tr><td class="py-1 pr-4 font-mono">ref</td><td class="py-1 pr-4">来源缩写标识</td><td class="py-1 pr-4 font-mono">vn_tank</td></tr>
-            <tr><td class="py-1 pr-4 font-mono">utm_source</td><td class="py-1 pr-4">流量平台来源</td><td class="py-1 pr-4 font-mono">telegram</td></tr>
-            <tr><td class="py-1 pr-4 font-mono">utm_medium</td><td class="py-1 pr-4">传播媒介，可自动联动也可手动切换</td><td class="py-1 pr-4 font-mono">community</td></tr>
-            <tr><td class="py-1 pr-4 font-mono">utm_campaign</td><td class="py-1 pr-4">活动标识（用于区分活动）</td><td class="py-1 pr-4 font-mono">vn_recharge_0313</td></tr>
-            <tr><td class="py-1 pr-4 font-mono">utm_content</td><td class="py-1 pr-4">素材标识（用于区分素材）</td><td class="py-1 pr-4 font-mono">banner_v1</td></tr>
+            <tr><td class="py-1 pr-4 font-mono">invitecode</td><td class="py-1 pr-4">Team or personal invite code (auto uppercase)</td><td class="py-1 pr-4 font-mono">ABC123</td></tr>
+            <tr><td class="py-1 pr-4 font-mono">ref</td><td class="py-1 pr-4">Source shorthand identifier</td><td class="py-1 pr-4 font-mono">vn_tank</td></tr>
+            <tr><td class="py-1 pr-4 font-mono">utm_source</td><td class="py-1 pr-4">Traffic source platform</td><td class="py-1 pr-4 font-mono">telegram</td></tr>
+            <tr><td class="py-1 pr-4 font-mono">utm_medium</td><td class="py-1 pr-4">Distribution medium (auto-synced, manually adjustable)</td><td class="py-1 pr-4 font-mono">community</td></tr>
+            <tr><td class="py-1 pr-4 font-mono">utm_campaign</td><td class="py-1 pr-4">Campaign identifier (to distinguish campaigns)</td><td class="py-1 pr-4 font-mono">vn_recharge_0313</td></tr>
+            <tr><td class="py-1 pr-4 font-mono">utm_content</td><td class="py-1 pr-4">Creative identifier (to distinguish creatives)</td><td class="py-1 pr-4 font-mono">banner_v1</td></tr>
           </tbody>
         </table>
       </div>
@@ -248,7 +248,7 @@ const locale: Locale = 'zh';
 
       const query = params.toString();
       latestLink = baseUrl ? (query ? `${baseUrl}?${query}` : baseUrl) : (query ? `?${query}` : '');
-      resultEl.textContent = latestLink || '（暂无可生成内容）';
+      resultEl.textContent = latestLink || '(No output yet)';
 
       const rows = [
         ['invitecode', invitecode || '—'],
@@ -268,11 +268,11 @@ const locale: Locale = 'zh';
       if (!latestLink) return;
       try {
         await navigator.clipboard.writeText(latestLink);
-        copyBtn.textContent = '已复制';
-        setTimeout(() => (copyBtn.textContent = '复制链接'), 1200);
+        copyBtn.textContent = 'Copied';
+        setTimeout(() => (copyBtn.textContent = 'Copy link'), 1200);
       } catch {
-        copyBtn.textContent = '复制失败';
-        setTimeout(() => (copyBtn.textContent = '复制链接'), 1200);
+        copyBtn.textContent = 'Copy failed';
+        setTimeout(() => (copyBtn.textContent = 'Copy link'), 1200);
       }
     });
   </script>
