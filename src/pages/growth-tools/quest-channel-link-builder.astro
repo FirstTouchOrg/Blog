@@ -54,7 +54,7 @@ const locale: Locale = 'en';
         </div>
         <div class="space-y-2">
           <label for="ref" class="text-sm font-semibold">ref</label>
-          <input id="ref" name="ref" placeholder="your_name_vn" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]" />
+          <input id="ref" name="ref" placeholder="your org or name, eg. vn / anome / kol_alice" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]" />
         </div>
       </div>
 
@@ -97,12 +97,14 @@ const locale: Locale = 'en';
 
       <div class="flex flex-wrap gap-3">
         <button type="submit" class="rounded-lg bg-[var(--color-gold)] px-4 py-2 text-sm font-semibold text-white hover:brightness-110">生成链接</button>
-        <button id="copy-btn" type="button" class="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm font-semibold hover:border-[var(--color-gold)]">复制结果</button>
       </div>
     </form>
 
     <section class="space-y-4 rounded-xl border border-[var(--color-border)] bg-card p-6">
-      <h2 class="text-xl font-semibold">生成结果</h2>
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-xl font-semibold">生成结果</h2>
+        <button id="copy-btn" type="button" class="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm font-semibold hover:border-[var(--color-gold)]">复制链接</button>
+      </div>
       <pre id="result" class="overflow-x-auto rounded-lg bg-background p-4 text-sm">（点击“生成链接”后显示）</pre>
       <div class="overflow-x-auto">
         <table class="min-w-full text-left text-sm">
@@ -139,7 +141,6 @@ const locale: Locale = 'en';
           </tbody>
         </table>
       </div>
-      <p class="text-xs text-muted-foreground">格式规范：除 invitecode 外，参数统一小写并将空格替换为下划线；链接拼接时优先按 invitecode、ref、utm_source、utm_medium 的顺序输出，后接 campaign/content。</p>
     </div>
   </dialog>
 
@@ -268,10 +269,10 @@ const locale: Locale = 'en';
       try {
         await navigator.clipboard.writeText(latestLink);
         copyBtn.textContent = '已复制';
-        setTimeout(() => (copyBtn.textContent = '复制结果'), 1200);
+        setTimeout(() => (copyBtn.textContent = '复制链接'), 1200);
       } catch {
         copyBtn.textContent = '复制失败';
-        setTimeout(() => (copyBtn.textContent = '复制结果'), 1200);
+        setTimeout(() => (copyBtn.textContent = '复制链接'), 1200);
       }
     });
   </script>
