@@ -382,7 +382,8 @@ const locale: Locale = 'zh';
       const url = shortlinkUrlEl.value;
       if (!url) return;
       try {
-        await copyToClipboard(url);
+        shortlinkUrlEl.select();
+        document.execCommand('copy');
         copyShortlinkBtn.textContent = '已复制';
         setTimeout(() => (copyShortlinkBtn.textContent = '复制'), 1200);
       } catch {
