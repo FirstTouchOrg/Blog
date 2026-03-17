@@ -103,7 +103,10 @@ const locale: Locale = 'en';
     <section class="space-y-4 rounded-xl border border-[var(--color-border)] bg-card p-6">
       <div class="flex items-center justify-between gap-3">
         <h2 class="text-xl font-semibold">Generated result</h2>
-        <button id="copy-btn" type="button" class="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm font-semibold hover:border-[var(--color-gold)]">Copy link</button>
+        <div class="flex gap-2">
+          <button id="copy-btn" type="button" class="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm font-semibold hover:border-[var(--color-gold)]">Copy link</button>
+          <button id="open-shortlink" type="button" class="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm font-semibold hover:border-[var(--color-gold)]">🔗 Short link</button>
+        </div>
       </div>
       <pre id="result" class="overflow-x-auto rounded-lg bg-background p-4 text-sm">（点击“Generate link”后显示）</pre>
       <div class="overflow-x-auto">
@@ -141,6 +144,31 @@ const locale: Locale = 'en';
           </tbody>
         </table>
       </div>
+    </div>
+  </dialog>
+
+  <dialog id="shortlink-modal" class="w-[calc(100%-2rem)] max-w-md rounded-xl border border-[var(--color-border)] bg-card p-0 backdrop:bg-black/40">
+    <div class="space-y-4 p-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold">Generate Short Link</h3>
+        <button id="close-shortlink" type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--color-border)] text-lg leading-none" aria-label="Close modal">×</button>
+      </div>
+      <p class="text-sm text-muted-foreground">
+        Create a short link via <span class="font-mono">go.levelup.land</span>. The generated URL must be under <span class="font-mono">levelup.land</span>. You can optionally add a tag for a categorised path.
+      </p>
+      <div class="space-y-2">
+        <label for="shortlink-tag" class="text-sm font-semibold">Tag (optional)</label>
+        <input id="shortlink-tag" type="text" placeholder="e.g. quest, campaign" class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none focus:border-[var(--color-gold)]" />
+      </div>
+      <button id="generate-shortlink" type="button" class="w-full rounded-lg bg-[var(--color-gold)] px-4 py-2 text-sm font-semibold text-white hover:brightness-110">Generate</button>
+      <div id="shortlink-result" class="hidden space-y-2">
+        <label class="text-sm font-semibold">Short Link</label>
+        <div class="flex items-center gap-2">
+          <input id="shortlink-url" type="text" readonly class="w-full rounded-lg border border-[var(--color-border)] bg-background px-3 py-2 text-sm outline-none" />
+          <button id="copy-shortlink" type="button" class="shrink-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm font-semibold hover:border-[var(--color-gold)]">Copy</button>
+        </div>
+      </div>
+      <p id="shortlink-error" class="hidden text-sm text-red-500"></p>
     </div>
   </dialog>
 
@@ -273,6 +301,78 @@ const locale: Locale = 'en';
       } catch {
         copyBtn.textContent = 'Copy failed';
         setTimeout(() => (copyBtn.textContent = 'Copy link'), 1200);
+      }
+    });
+
+    /* ---- Short link modal ---- */
+    const openShortlinkBtn = document.getElementById('open-shortlink');
+    const closeShortlinkBtn = document.getElementById('close-shortlink');
+    const shortlinkModal = document.getElementById('shortlink-modal');
+    const shortlinkTagEl = document.getElementById('shortlink-tag');
+    const generateShortlinkBtn = document.getElementById('generate-shortlink');
+    const shortlinkResultEl = document.getElementById('shortlink-result');
+    const shortlinkUrlEl = document.getElementById('shortlink-url');
+    const copyShortlinkBtn = document.getElementById('copy-shortlink');
+    const shortlinkErrorEl = document.getElementById('shortlink-error');
+
+    openShortlinkBtn?.addEventListener('click', () => {
+      if (!latestLink) return;
+      shortlinkResultEl.classList.add('hidden');
+      shortlinkErrorEl.classList.add('hidden');
+      shortlinkTagEl.value = '';
+      shortlinkModal?.showModal();
+    });
+    closeShortlinkBtn?.addEventListener('click', () => shortlinkModal?.close());
+    shortlinkModal?.addEventListener('click', (e) => {
+      const rect = shortlinkModal.getBoundingClientRect();
+      const inDialog = rect.top <= e.clientY && e.clientY <= rect.top + rect.height && rect.left <= e.clientX && e.clientX <= rect.left + rect.width;
+      if (!inDialog) shortlinkModal.close();
+    });
+
+    generateShortlinkBtn?.addEventListener('click', async () => {
+      if (!latestLink) return;
+      shortlinkErrorEl.classList.add('hidden');
+      shortlinkResultEl.classList.add('hidden');
+      generateShortlinkBtn.disabled = true;
+      generateShortlinkBtn.textContent = 'Generating...';
+
+      const body = { longUrl: latestLink };
+      const tag = shortlinkTagEl.value.trim();
+      if (tag) body.tag = tag;
+
+      try {
+        const res = await fetch('https://go.levelup.land/api/shortlink', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          shortlinkErrorEl.textContent = data.error || 'Request failed';
+          shortlinkErrorEl.classList.remove('hidden');
+        } else {
+          shortlinkUrlEl.value = data.shortUrl;
+          shortlinkResultEl.classList.remove('hidden');
+        }
+      } catch (err) {
+        shortlinkErrorEl.textContent = 'Network error, please try again';
+        shortlinkErrorEl.classList.remove('hidden');
+      } finally {
+        generateShortlinkBtn.disabled = false;
+        generateShortlinkBtn.textContent = 'Generate';
+      }
+    });
+
+    copyShortlinkBtn?.addEventListener('click', async () => {
+      const url = shortlinkUrlEl.value;
+      if (!url) return;
+      try {
+        await navigator.clipboard.writeText(url);
+        copyShortlinkBtn.textContent = 'Copied';
+        setTimeout(() => (copyShortlinkBtn.textContent = 'Copy'), 1200);
+      } catch {
+        copyShortlinkBtn.textContent = 'Failed';
+        setTimeout(() => (copyShortlinkBtn.textContent = 'Copy'), 1200);
       }
     });
   </script>
