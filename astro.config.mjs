@@ -5,6 +5,16 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   site: 'https://blog.levelup.land',
   output: 'static',
+  vite: {
+    server: {
+      proxy: {
+        '/api/shortlink': {
+          target: 'https://go.levelup.land',
+          changeOrigin: true,
+        },
+      },
+    },
+  },
   integrations: [
     react(),
     tailwind({

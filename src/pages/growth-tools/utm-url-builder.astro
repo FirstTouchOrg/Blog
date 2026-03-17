@@ -173,6 +173,21 @@ const locale: Locale = 'en';
   </dialog>
 
   <script is:inline>
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+      }
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      return Promise.resolve();
+    }
+
     const mediumMap = {
       telegram: 'community',
       discord: 'community',
@@ -295,7 +310,7 @@ const locale: Locale = 'en';
     copyBtn.addEventListener('click', async () => {
       if (!latestLink) return;
       try {
-        await navigator.clipboard.writeText(latestLink);
+        await copyToClipboard(latestLink);
         copyBtn.textContent = 'Copied';
         setTimeout(() => (copyBtn.textContent = 'Copy link'), 1200);
       } catch {
@@ -341,7 +356,7 @@ const locale: Locale = 'en';
       if (tag) body.tag = tag;
 
       try {
-        const res = await fetch('https://go.levelup.land/api/shortlink', {
+        const res = await fetch('/api/shortlink', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
@@ -367,7 +382,7 @@ const locale: Locale = 'en';
       const url = shortlinkUrlEl.value;
       if (!url) return;
       try {
-        await navigator.clipboard.writeText(url);
+        await copyToClipboard(url);
         copyShortlinkBtn.textContent = 'Copied';
         setTimeout(() => (copyShortlinkBtn.textContent = 'Copy'), 1200);
       } catch {
