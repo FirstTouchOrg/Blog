@@ -356,7 +356,7 @@ const locale: Locale = 'zh';
       if (tag) body.tag = tag;
 
       try {
-        const res = await fetch('/api/shortlink', {
+        const res = await fetch('https://go.levelup.land/api/shortlink', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
